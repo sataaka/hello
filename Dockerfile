@@ -1,5 +1,5 @@
 # ビルドステージ
-FROM maven:3.9.7-openjdk-17 AS build
+FROM maven:3.9.7-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -Dmaven.test.skip=true
