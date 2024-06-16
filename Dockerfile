@@ -1,11 +1,17 @@
 # 基本イメージの設定
 FROM openjdk:17-slim as build
 
+# Mavenのインストール
+RUN apt-get update && apt-get install -y maven
+
 # Mavenとアプリケーションのソースコードをコピーするためのディレクトリを作成
 WORKDIR /workspace/app
 
 # Maven依存関係のキャッシュを可能にするために、pom.xmlだけを先にコピー
 COPY pom.xml /workspace/app/
+
+# Maven依存関係のダウンロード
+RUN mvn dependency:go-offline -B
 
 # アプリケーションのソースコードをコピー
 COPY src /workspace/app/src
