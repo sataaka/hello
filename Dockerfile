@@ -16,13 +16,13 @@ RUN mvn package -DskipTests
 # ランタイム用の軽量な基本イメージ
 FROM openjdk:17-slim
 
-# Mavenのインストール
-RUN apt-get update && apt-get install -y maven
-
 WORKDIR /app
 
 # ビルドステージから生成されたjarファイルをコピー
 COPY --from=build /workspace/app/target/*.jar app.jar
+
+# アプリケーションのポートを開放
+EXPOSE 8080
 
 # アプリケーションの実行
 ENTRYPOINT ["java","-jar","app.jar"]
