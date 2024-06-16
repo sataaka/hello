@@ -5,7 +5,7 @@ COPY . .
 RUN mvn clean package -Dmaven.test.skip=true
 
 # 実行ステージ
-FROM adoptopenjdk:17-jre-hotspot
+FROM openjdk:17-jre-slim
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
