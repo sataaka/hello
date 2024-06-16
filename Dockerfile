@@ -1,34 +1,14 @@
-# 基本イメージの設定
-FROM openjdk:17-slim as build
+# Dockerfile
 
-# Mavenのインストール
-RUN apt-get update && apt-get install -y maven
-
-# Mavenとアプリケーションのソースコードをコピーするためのディレクトリを作成
-WORKDIR /workspace/app
-
-# Maven依存関係のキャッシュを可能にするために、pom.xmlだけを先にコピー
-COPY pom.xml /workspace/app/
-
-# Maven依存関係のダウンロード
-RUN mvn dependency:go-offline -B
-
-# アプリケーションのソースコードをコピー
-COPY src /workspace/app/src
-
-# プロジェクトをビルドしてjarファイルを生成
-RUN mvn package -DskipTests
-
-# ランタイム用の軽量な基本イメージ
-FROM openjdk:17-slim
-
+# ビルドステージ
+FROM maven:3.9.7-openjdk-17-slim AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -Dmaven.test.skip=true
 
-# ビルドステージから生成されたjarファイルをコピー
-COPY --from=build /workspace/app/target/*.jar app.jar
-
-# アプリケーションのポートを開放
+# 実行ステージ
+FROM adoptopenjdk:17-jre-hotspot
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# アプリケーションの実行
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
