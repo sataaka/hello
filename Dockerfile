@@ -19,6 +19,9 @@ RUN mvn package -DskipTests
 # ランタイム用の軽量な基本イメージ
 FROM openjdk:17-slim
 
+# Mavenのインストール
+RUN apt-get update && apt-get install -y maven
+
 WORKDIR /app
 
 # ビルドステージから生成されたjarファイルをコピー
